@@ -64,7 +64,7 @@ const loginUser = (userLogin) => {
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin
             })
-            const fresh_token = await genneralRefreshToken({
+            const refresh_token = await genneralRefreshToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin
             })
@@ -72,7 +72,33 @@ const loginUser = (userLogin) => {
                     status: 'OK',
                     message:'Thành Công',
                     access_token,
-                    fresh_token
+                    refresh_token
+                })
+        }catch(e){
+            reject(e)
+        }
+   })
+}
+// Update tài khoản
+const updateUser = (id,data) => {
+    return new Promise(async(resolve, reject) => {
+        try{
+            const checkUser = await User.findOne({
+                _id: id
+            })
+            // Check email đã tồn tại hay chưa 
+            if(checkUser === null){
+                resolve({
+                    status: 'OK',
+                    message: 'Email không có trong database'
+                })
+            }
+            const updatedUser = await User.findByIdAndUpdate(id ,data ,{new:true})
+            console.log('updatedUser',updatedUser)
+                resolve({
+                    status: 'OK',
+                    message:'Thành Công',
+                    data: updatedUser
                 })
         }catch(e){
             reject(e)
@@ -81,5 +107,6 @@ const loginUser = (userLogin) => {
 }
 module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    updateUser
 }

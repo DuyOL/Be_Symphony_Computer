@@ -1,21 +1,22 @@
 const jwt = require ('jsonwebtoken')
-
+const dotenv = require('dotenv')
+dotenv.config()
 // Thông báo truy cập
 const genneralAccessToken = async (payload) => {
     console.log('payload',payload)
     const access_token = jwt.sign({
      payload
-   }, 'access_token' , { expiresIn: '1h'})
+   }, process.env.ACCESS_TOKEN , { expiresIn: '1h'})
 
    return access_token
 }
 // Thông báo làm mới cấp (fresh) truy cập
 const genneralRefreshToken = async (payload) => {
-    const access_token = jwt.sign({
+    const refresh_token = jwt.sign({
      payload
-   }, 'fresh_token' , { expiresIn: '365d'})
+   }, process.env.REFRESH_TOKEN , { expiresIn: '365d'})
 
-   return access_token
+   return refresh_token
 }
 module.exports = {
     genneralAccessToken,
