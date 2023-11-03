@@ -28,7 +28,7 @@ const createUser = (newUser) => {
             if(createdUser){
                 resolve({
                     status: 'OK',
-                    message:'Thành Công',
+                    message:'Đăng kí Thành Công',
                     data: createdUser
                 })
             }
@@ -70,7 +70,7 @@ const loginUser = (userLogin) => {
             })
                 resolve({
                     status: 'OK',
-                    message:'Thành Công',
+                    message:'Đăng nhập Thành Công',
                     access_token,
                     refresh_token
                 })
@@ -80,33 +80,99 @@ const loginUser = (userLogin) => {
    })
 }
 // Update tài khoản
-const updateUser = (id,data) => {
-    return new Promise(async(resolve, reject) => {
-        try{
+const updateUser = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
             const checkUser = await User.findOne({
                 _id: id
             })
-            // Check email đã tồn tại hay chưa 
-            if(checkUser === null){
+            if (checkUser === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'Email không có trong database'
+                    status: 'ERR',
+                    message: 'Người dùng không được xác định'
                 })
             }
-            const updatedUser = await User.findByIdAndUpdate(id ,data ,{new:true})
-            console.log('updatedUser',updatedUser)
-                resolve({
-                    status: 'OK',
-                    message:'Thành Công',
-                    data: updatedUser
-                })
-        }catch(e){
+            if (data.password) {
+                // hash a password băm mật khẩu ra ký tự đặc biệt lưu vào data
+                data.password = bcrypt.hashSync(data.password, 10);
+            }
+            const updatedUser = await User.findByIdAndUpdate(id, data, { new: true })
+            resolve({
+                status: 'OK',
+                message: 'Đã cập nhập tài khoản',
+                data: updatedUser
+            })
+        } catch (e) {
             reject(e)
         }
-   })
+    })
+}
+// Delete tài khoản
+const deleteUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({
+                _id: id
+            })
+            if (checkUser === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Người dùng không được xác định'
+                })
+            }
+            await User.findByIdAndDelete(id)
+            resolve({
+                status: 'OK',
+                message: 'Đã xoá tài khoản thành công',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+// Nhận tất cả người dùng
+const getAllUser = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allUser = await User.find()
+            resolve({
+                status: 'OK',
+                message: 'Thành công',
+                data: allUser
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+const getDetailsUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({
+                _id: id
+            })
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: 'Người dùng không được xác định'
+                })
+            }
+            resolve({
+                status: 'OK',
+                message: 'Thành công',
+                data: user
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
 }
 module.exports = {
     createUser,
     loginUser,
-    updateUser
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 }
