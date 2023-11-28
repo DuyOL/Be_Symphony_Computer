@@ -13,7 +13,7 @@ const createUser = (newUser) => {
             // Check email đã tồn tại hay chưa 
             if(checkUser !== null){
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'Email đã tồn tại'
                 })
             }
@@ -40,7 +40,7 @@ const createUser = (newUser) => {
 // Đăng nhập tài khoản
 const loginUser = (userLogin) => {
     return new Promise(async(resolve, reject) => {
-        const { name, email, password, confirmPassword, phone } = userLogin
+        const {  email, password } = userLogin
         try{
             const checkUser = await User.findOne({
                 email: email
@@ -48,7 +48,7 @@ const loginUser = (userLogin) => {
             // Check email đã tồn tại hay chưa 
             if(checkUser === null){
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'Email không có trong database'
                 })
             }
@@ -56,7 +56,7 @@ const loginUser = (userLogin) => {
             // check mật khẩu có đúng hay không
             if(!comparePassword){
                 resolve({
-                    status: 'OK',
+                    status: 'ERR',
                     message: 'Mật khẩu hoặc người dùng không chính xác'
                 })
             }
